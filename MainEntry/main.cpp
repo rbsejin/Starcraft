@@ -4,10 +4,11 @@
 
 #include <windows.h>
 
+#include "../Game/Game.h"
+
 LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
-int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine, int nCmdShow)
-{
+int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _In_ LPWSTR lpCmdLine, _In_ int nCmdShow) {
 	// Register the window class.
 	const wchar_t CLASS_NAME[] = L"Starcraft";
 
@@ -44,14 +45,16 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
 	ShowWindow(hwnd, nCmdShow);
 
 	// Run the message loop.
+	Game* game = new Game();
+	game->Initialize(hwnd);
 
-	MSG msg = { };
+	MSG msg = {};
 
 	while (true)
 	{
 		if (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
 		{
-			if (msg.message == WM_QUIT) 
+			if (msg.message == WM_QUIT)
 			{
 				break;
 			}
@@ -61,11 +64,14 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
 		}
 		else
 		{
-			
+			game->Process();
 		}
 	}
 
-	return 0;
+	delete game;
+	game = nullptr;
+
+	return (int)msg.wParam;
 }
 
 LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)

@@ -16,10 +16,30 @@
     <Filter Include="MainEntry">
       <UniqueIdentifier>{5e0f76d2-81b8-4be8-9ca2-099c3d3070cf}</UniqueIdentifier>
     </Filter>
+    <Filter Include="DDraw">
+      <UniqueIdentifier>{ec3aff4f-1a44-40e0-9932-41d4d5e7b0e1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Game">
+      <UniqueIdentifier>{07487cdd-a1d9-4e65-849e-a7b2958a161b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="MainEntry\main.cpp">
       <Filter>MainEntry</Filter>
     </ClCompile>
+    <ClCompile Include="Game\Game.cpp">
+      <Filter>Game</Filter>
+    </ClCompile>
+    <ClCompile Include="DDraw\DDraw.cpp">
+      <Filter>DDraw</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Game\Game.h">
+      <Filter>Game</Filter>
+    </ClInclude>
+    <ClInclude Include="DDraw\DDraw.h">
+      <Filter>DDraw</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

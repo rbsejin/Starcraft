@@ -1,0 +1,199 @@
+#include <windows.h>
+#include <string>
+
+#include "DDraw.h"
+
+DDraw::DDraw()
+	: mDDraw(nullptr),
+	mDDraw7(nullptr),
+	mDDPrimary(nullptr),
+	mDDBack(nullptr),
+	mClipper(nullptr),
+	mHwnd(nullptr),
+	mBackBuffer(nullptr),
+	mBackBufferPitch(0),
+	mWidth(0),
+	mHeight(0),
+	mWindowRect{}
+{
+}
+
+DDraw::~DDraw()
+{
+	CleanUp();
+}
+
+BOOL DDraw::Initialize(HWND hwnd)
+{
+	mHwnd = hwnd;
+
+	DDSURFACEDESC2 ddsd = { 0, };
+	ddsd.dwSize = sizeof(DDSURFACEDESC2);
+	ddsd.dwFlags = DDSD_CAPS;
+	ddsd.ddsCaps.dwCaps = DDSCAPS_PRIMARYSURFACE;
+
+	HRESULT hr = DirectDrawCreate(nullptr, &mDDraw, nullptr);
+	if (FAILED(hr))
+	{
+		return FALSE;
+	}
+
+	mDDraw->QueryInterface(IID_IDirectDraw7, (LPVOID*)&mDDraw7);
+	if (FAILED(hr))
+	{
+		MessageBox(hwnd, L"Fail to Create DirectDraw 7", L"Error", MB_OK);
+		return FALSE;
+	}
+
+	hr = mDDraw7->SetCooperativeLevel(hwnd, DDSCL_NORMAL);
+	if (FAILED(hr))
+	{
+		MessageBox(hwnd, L"Failed to Set CooperativeLevel", L"ERROR", MB_OK);
+		return FALSE;
+	}
+
+	hr = mDDraw7->CreateSurface(&ddsd, &mDDPrimary, nullptr);
+	if (FAILED(hr))
+	{
+		MessageBox(hwnd, L"Failed to CreateSurface", L"ERROR", MB_OK);
+		return FALSE;
+	}
+
+	hr = mDDraw->CreateClipper(0, &mClipper, nullptr);
+	if (FAILED(hr))
+	{
+		MessageBox(hwnd, L"Failed to Create Clipper", L"ERROR", MB_OK);
+		return FALSE;
+	}
+
+	mClipper->SetHWnd(0, hwnd);
+	mDDPrimary->SetClipper(mClipper);
+
+	//OnUpdateWindowPos()
+	{
+		GetClientRect(mHwnd, &mWindowRect);
+		::ClientToScreen(mHwnd, (POINT*)&mWindowRect.left);
+		::ClientToScreen(mHwnd, (POINT*)&mWindowRect.right);
+	}
+
+	mWidth = mWindowRect.right - mWindowRect.left;
+	mHeight = mWindowRect.bottom - mWindowRect.top;
+
+	// CreateBackBuffer(DWORD width, DOWRD height)
+	{
+		DDSURFACEDESC2 ddsc = {};
+		ddsc.dwSize = sizeof(DDSURFACEDESC2);
+		ddsc.dwFlags = DDSD_WIDTH | DDSD_HEIGHT | DDSD_CAPS;
+		ddsc.ddsCaps.dwCaps = DDSCAPS_OFFSCREENPLAIN | DDSCAPS_SYSTEMMEMORY;
+		ddsc.dwWidth = mWidth;
+		ddsc.dwHeight = mHeight;
+
+		hr = mDDraw7->CreateSurface(&ddsc, &mDDBack, nullptr);
+		if (FAILED(hr))
+		{
+			return FALSE;
+		}
+
+		mDDBack->GetSurfaceDesc(&ddsc);
+	}
+
+	return TRUE;
+}
+
+BOOL DDraw::BeginDraw()
+{
+	DDSURFACEDESC2 ddsc = {};
+	ddsc.dwSize = sizeof(DDSURFACEDESC2);
+
+	HRESULT hr = mDDBack->Lock(nullptr, &ddsc, DDLOCK_WAIT | DDLOCK_WRITEONLY, nullptr);
+	if (FAILED(hr))
+	{
+		return FALSE;
+	}
+
+	mBackBuffer = (char*)ddsc.lpSurface;
+	mBackBufferPitch = ddsc.lPitch;
+
+	return TRUE;
+}
+
+BOOL DDraw::EndDraw()
+{
+	HRESULT hr = mDDBack->Unlock(nullptr);
+	if (FAILED(hr))
+	{
+		return FALSE;
+	}
+
+	mBackBuffer = nullptr;
+	mBackBufferPitch = 0;
+	return TRUE;
+}
+
+void DDraw::Clear()
+{
+	if (mBackBuffer == nullptr)
+	{
+		return;
+	}
+
+	for (DWORD y = 0; y < mHeight; y++)
+	{
+		memset(mBackBuffer + y * mBackBufferPitch, 0, 4 * mWidth);
+	}
+}
+
+void DDraw::OnDraw()
+{
+	mDDPrimary->Blt(&mWindowRect, mDDBack, nullptr, DDBLT_WAIT, nullptr);
+}
+
+void DDraw::DrawRect(int x, int y, int width, int height, DWORD color)
+{
+	int startX = max(0, x);
+	int startY = max(0, y);
+	int endX = min(x + width, (int)mWidth);
+	int endY = min(y + height, (int)mHeight);
+
+	for (int y = startY; y < endY; y++)
+	{
+		for (int x = startX; x < endX; x++)
+		{
+			DWORD* pDest = (DWORD*)(mBackBuffer + x * 4 + y * mBackBufferPitch);
+			*pDest = color;
+		}
+	}
+}
+
+void DDraw::CleanUp()
+{
+	if (mDDBack != nullptr)
+	{
+		mDDBack->Release();
+		mDDBack = nullptr;
+	}
+
+	if (mClipper != nullptr)
+	{
+		mClipper->Release();
+		mClipper = nullptr;
+	}
+
+	if (mDDPrimary != nullptr)
+	{
+		mDDPrimary->Release();
+		mDDPrimary = nullptr;
+	}
+
+	if (mDDraw7 != nullptr)
+	{
+		mDDraw7->Release();
+		mDDraw7 = nullptr;
+	}
+
+	if (mDDraw != nullptr)
+	{
+		mDDraw->Release();
+		mDDraw = nullptr;
+	}
+}
