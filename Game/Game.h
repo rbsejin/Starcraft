@@ -1,6 +1,8 @@
 #pragma once
 
 class DDraw;
+class JPGImage;
+class CImageData;
 
 class Game
 {
@@ -13,6 +15,9 @@ public:
 	void CleanUp();
 
 private:
-	DDraw* mDDraw = nullptr;
-	HWND mHwnd = nullptr;
+	DDraw* mDDraw;
+	HWND mHwnd;
+
+	JPGImage* mBackImage;
+	CImageData* mMarineImageData;
 };

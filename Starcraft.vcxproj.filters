@@ -22,6 +22,21 @@
     <Filter Include="Game">
       <UniqueIdentifier>{07487cdd-a1d9-4e65-849e-a7b2958a161b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="zlib">
+      <UniqueIdentifier>{cdd8e79c-e393-4403-a605-53ef7f3607ed}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="lpng1637">
+      <UniqueIdentifier>{eb379420-e65c-4365-97ed-356fef916fc9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Common">
+      <UniqueIdentifier>{7ee2ae0d-2572-4bb7-b522-625d9af0acf5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="util">
+      <UniqueIdentifier>{b6d3ff0a-c150-4291-8e95-154697233ca9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ImageData">
+      <UniqueIdentifier>{133f4a9d-dd48-4651-aff4-5f0248159327}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="MainEntry\main.cpp">
@@ -33,6 +48,15 @@
     <ClCompile Include="DDraw\DDraw.cpp">
       <Filter>DDraw</Filter>
     </ClCompile>
+    <ClCompile Include="util\Util.cpp">
+      <Filter>util</Filter>
+    </ClCompile>
+    <ClCompile Include="util\JPGImage.cpp">
+      <Filter>util</Filter>
+    </ClCompile>
+    <ClCompile Include="ImageData\ImageData.cpp">
+      <Filter>ImageData</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Game\Game.h">
@@ -40,6 +64,21 @@
     </ClInclude>
     <ClInclude Include="DDraw\DDraw.h">
       <Filter>DDraw</Filter>
+    </ClInclude>
+    <ClInclude Include="typedef.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="util\Util.h">
+      <Filter>util</Filter>
+    </ClInclude>
+    <ClInclude Include="JPGImage.h">
+      <Filter>util</Filter>
+    </ClInclude>
+    <ClInclude Include="util\JPGImage.h">
+      <Filter>util</Filter>
+    </ClInclude>
+    <ClInclude Include="ImageData\ImageData.h">
+      <Filter>ImageData</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

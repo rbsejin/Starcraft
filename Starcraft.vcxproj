@@ -21,11 +21,19 @@
   <ItemGroup>
     <ClCompile Include="DDraw\DDraw.cpp" />
     <ClCompile Include="Game\Game.cpp" />
+    <ClCompile Include="ImageData\ImageData.cpp" />
     <ClCompile Include="MainEntry\main.cpp" />
+    <ClCompile Include="util\JPGImage.cpp" />
+    <ClCompile Include="util\Util.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="DDraw\DDraw.h" />
     <ClInclude Include="Game\Game.h" />
+    <ClInclude Include="ImageData\ImageData.h" />
+    <ClInclude Include="JPGImage.h" />
+    <ClInclude Include="typedef.h" />
+    <ClInclude Include="util\JPGImage.h" />
+    <ClInclude Include="util\Util.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
@@ -81,9 +89,13 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
+    <IncludePath>D:\source\Starcraft\include\zlib;D:\source\Starcraft\include\libpng;$(IncludePath)</IncludePath>
+    <LibraryPath>D:\source\Starcraft\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
+    <IncludePath>D:\source\Starcraft\include\zlib;D:\source\Starcraft\include\libpng;$(IncludePath)</IncludePath>
+    <LibraryPath>D:\source\Starcraft\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
@@ -101,7 +113,7 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>ddraw.lib;dxguid.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>ddraw.lib;dxguid.lib;libpngd.lib;zlibd.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -118,7 +130,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>ddraw.lib;dxguid.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>ddraw.lib;dxguid.lib;libpng.lib;zlib.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">

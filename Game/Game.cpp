@@ -2,8 +2,14 @@
 
 #include "Game.h"
 #include "../DDraw/DDraw.h"
+#include "../util/JPGImage.h"
+#include "../ImageData/ImageData.h"
 
 Game::Game()
+	: mDDraw(nullptr)
+	, mHwnd(nullptr)
+	, mBackImage(nullptr)
+	, mMarineImageData(nullptr)
 {
 }
 
@@ -18,6 +24,25 @@ void Game::Initialize(HWND hwnd)
 
 	mDDraw = new DDraw();
 	mDDraw->Initialize(hwnd);
+
+	JPGImage* marineImage = new JPGImage();
+	if (marineImage->LoadJPGImage("image/Marine.png"))
+	{
+		DWORD marineColorKey = marineImage->GetPixel(5, 0);
+
+		mMarineImageData = new CImageData();
+		char* rawImage = marineImage->GetRawImage();
+		int width = marineImage->getWidth();
+		int height = marineImage->getHeight();
+
+		mMarineImageData->Create(rawImage, width, height, marineColorKey);
+	}
+
+	delete marineImage;
+	marineImage = nullptr;
+
+	mBackImage = new JPGImage();
+	mBackImage->LoadJPGImage("image/background.png");
 }
 
 void Game::Process()
@@ -25,10 +50,20 @@ void Game::Process()
 	// DrawScene
 	mDDraw->BeginDraw();
 
-	mDDraw->Clear();
+	if (mBackImage != nullptr)
+	{
+		int width = mBackImage->getWidth();
+		int height = mBackImage->getHeight();
+		char* rawImage = (char*)mBackImage->GetRawImage();
+		mDDraw->DrawBitmap(0, 0, width, height, rawImage);
+		//mDDraw->DrawRect(0, 0, width, height, 0xffffffff);
+	}
+	else
+	{
+		mDDraw->Clear();
+	}
 
-	// draw
-	mDDraw->DrawRect(0, 0, 100, 100, 0xff00ff00);
+	mDDraw->DrawImageData(0, 0, mMarineImageData);
 
 	mDDraw->EndDraw();
 
@@ -37,6 +72,9 @@ void Game::Process()
 
 void Game::CleanUp()
 {
+	delete mBackImage;
+	mBackImage = nullptr;
+
 	delete mDDraw;
 	mDDraw = nullptr;
 }

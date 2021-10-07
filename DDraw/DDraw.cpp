@@ -2,6 +2,8 @@
 #include <string>
 
 #include "DDraw.h"
+#include "../Util/Util.h"
+#include "../ImageData/ImageData.h"
 
 DDraw::DDraw()
 	: mDDraw(nullptr),
@@ -164,6 +166,107 @@ void DDraw::DrawRect(int x, int y, int width, int height, DWORD color)
 		}
 	}
 }
+
+BOOL DDraw::DrawBitmap(int x, int y, int width, int height, char* bits)
+{
+	INT_VECTOR2 srcStart = {};
+	INT_VECTOR2 destStart = {};
+
+	INT_VECTOR2 position = { x, y };
+	INT_VECTOR2 imageSize = { width, height };
+	INT_VECTOR2 destSize = {};
+
+	if (!CalcClipArea(&srcStart, &destStart, &destSize, &position, &imageSize))
+	{
+		return FALSE;
+	}
+
+	char* src = bits + (srcStart.x + srcStart.y * width) * 4;
+	char* dest = mBackBuffer + (destStart.x * 4) + destStart.y * mBackBufferPitch;
+
+	for (int y = 0; y < destSize.y; y++)
+	{
+		for (int x = 0; x < destSize.x; x++)
+		{
+			*(DWORD*)dest = *(DWORD*)src;
+			src += 4;
+			dest += 4;
+		}
+
+		src -= destSize.x * 4;
+		src += width * 4;
+		dest -= destSize.x * 4;
+		dest += mBackBufferPitch;
+	}
+
+	return TRUE;
+}
+
+BOOL DDraw::CalcClipArea(INT_VECTOR2* outSrcStart, INT_VECTOR2* outDestStart, INT_VECTOR2* outDestSize, const INT_VECTOR2* position, const INT_VECTOR2* imageSize)
+{
+	INT_VECTOR2	bufferSize = { (int)mWidth, (int)mHeight };
+	return ::CalcClipArea(outSrcStart, outDestStart, outDestSize, position, imageSize, &bufferSize);
+}
+
+BOOL DDraw::DrawImageData(int sx, int sy, const CImageData* pImgData)
+{
+#ifdef _DEBUG
+	if (!mBackBuffer)
+		__debugbreak();
+#endif
+
+	int iScreenWidth = (int)mWidth;
+
+	int iBitmapWidth = (int)pImgData->GetWidth();
+	int iBitmapHeight = (int)pImgData->GetHeight();
+
+	INT_VECTOR2	ivSrcStart = {};
+	INT_VECTOR2	ivDestStart = {};
+
+	INT_VECTOR2	ivPos = { sx, sy };
+	INT_VECTOR2	ivImageSize = { iBitmapWidth, iBitmapHeight };
+	INT_VECTOR2 ivDestSize = {};
+
+	if (!CalcClipArea(&ivSrcStart, &ivDestStart, &ivDestSize, &ivPos, &ivImageSize))
+	{
+		return FALSE;
+	}
+
+	const COMPRESSED_LINE* pLineDesc = pImgData->GetCompressedImage(ivSrcStart.y);
+	char* pDestPerLine = mBackBuffer + (ivDestStart.y) * mBackBufferPitch;
+
+	for (int y = 0; y < ivDestSize.y; y++)
+	{
+		for (DWORD i = 0; i < pLineDesc->dwStreamNum; i++)
+		{
+			PIXEL_STREAM* pStream = pLineDesc->pPixelStream + i;
+			DWORD	dwPixelColor = pStream->dwPixel;
+			int		iPixelNum = (int)pStream->wPixelNum;
+
+			int dest_x = sx + (int)pStream->wPosX;
+			if (dest_x < 0)
+			{
+				iPixelNum += dest_x;
+				dest_x = 0;
+			}
+			if (dest_x + iPixelNum > iScreenWidth)
+			{
+				iPixelNum = iScreenWidth - dest_x;
+			}
+			char* pDest = pDestPerLine + (DWORD)(dest_x * 4);
+			for (int x = 0; x < iPixelNum; x++)
+			{
+				*(DWORD*)pDest = dwPixelColor;
+				pDest += 4;
+			}
+		}
+		pLineDesc++;
+		pDestPerLine += mBackBufferPitch;
+	}
+
+	return TRUE;
+}
+
 
 void DDraw::CleanUp()
 {
