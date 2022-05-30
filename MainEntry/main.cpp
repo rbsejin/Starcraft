@@ -3,8 +3,11 @@
 #endif 
 
 #include <windows.h>
+#include <windowsx.h>
 
 #include "../Game/Game.h"
+
+Game* gGame = nullptr;
 
 LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
@@ -45,8 +48,8 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
 	ShowWindow(hwnd, nCmdShow);
 
 	// Run the message loop.
-	Game* game = new Game();
-	game->Initialize(hwnd);
+	gGame = new Game();
+	gGame->Initialize(hwnd);
 
 	MSG msg = {};
 
@@ -64,12 +67,14 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
 		}
 		else
 		{
-			game->Process();
+			gGame->Process();
 		}
 	}
 
-	delete game;
-	game = nullptr;
+	delete gGame;
+	gGame = nullptr;
+
+	
 
 	return (int)msg.wParam;
 }
@@ -78,6 +83,17 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
 	switch (uMsg)
 	{
+	case WM_RBUTTONDOWN:
+	{
+		
+		int x = GET_X_LPARAM(lParam);
+		int y = GET_Y_LPARAM(lParam);
+		//WCHAR buffer[32];
+		//wsprintf(buffer, L"x: %d, y: %d", x, y);
+		//MessageBox(hwnd, buffer, L"클릭 위치", MB_OK);
+		gGame->OnRButtonDown(x, y);
+		break;
+	}
 	case WM_PAINT:
 	{
 		PAINTSTRUCT ps;

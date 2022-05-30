@@ -22,12 +22,6 @@
     <Filter Include="Game">
       <UniqueIdentifier>{07487cdd-a1d9-4e65-849e-a7b2958a161b}</UniqueIdentifier>
     </Filter>
-    <Filter Include="zlib">
-      <UniqueIdentifier>{cdd8e79c-e393-4403-a605-53ef7f3607ed}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="lpng1637">
-      <UniqueIdentifier>{eb379420-e65c-4365-97ed-356fef916fc9}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Common">
       <UniqueIdentifier>{7ee2ae0d-2572-4bb7-b522-625d9af0acf5}</UniqueIdentifier>
     </Filter>
@@ -57,6 +51,9 @@
     <ClCompile Include="ImageData\ImageData.cpp">
       <Filter>ImageData</Filter>
     </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\lib\native\src\lodepng.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Game\Game.h">
@@ -71,14 +68,14 @@
     <ClInclude Include="util\Util.h">
       <Filter>util</Filter>
     </ClInclude>
-    <ClInclude Include="JPGImage.h">
-      <Filter>util</Filter>
-    </ClInclude>
     <ClInclude Include="util\JPGImage.h">
       <Filter>util</Filter>
     </ClInclude>
     <ClInclude Include="ImageData\ImageData.h">
       <Filter>ImageData</Filter>
     </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
   </ItemGroup>
 </Project>

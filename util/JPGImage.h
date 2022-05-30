@@ -1,7 +1,5 @@
 #pragma once
 #include <minwindef.h>
-#include <cstdio>
-#include <pngconf.h>
 
 class JPGImage
 {
